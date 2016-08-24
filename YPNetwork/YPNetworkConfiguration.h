@@ -1,0 +1,26 @@
+//
+//  YPNetworkConfiguration.h
+//  lujue
+//
+//  Created by itachi on 16/8/23.
+//  Copyright © 2016年 com.bj-evetime. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+#import "YPNetworkCommonHeader.h"
+
+@interface YPNetworkConfiguration : NSObject
+
++ (instancetype)configuration;
+
+@property (nonatomic,copy) NSString *baseUrl;
+@property (nonatomic,assign) YPHttpSerializerType requestSerializerType;
+@property (nonatomic,assign) YPHttpSerializerType responseSerializerType;
+@property (nonatomic,copy) NSDictionary<NSString*, NSString*> *authenticationHeaders;
+@property (nonatomic,copy) NSDictionary<NSString*,NSString*> *requestHeaders;
+@property (nonatomic,assign) NSTimeInterval timeoutInterval;
+@property (nonatomic,strong) NSMutableDictionary<NSString *, NSString *> *paths;
+
+- (void)resolePathsFromFile:(NSString *)fileName;
+
+@end
