@@ -112,6 +112,9 @@ static YPNetworkManager* _instance = nil;
     }
     
     NSString *requestUrl = [NSString stringWithFormat:@"%@%@",[[YPNetworkConfiguration configuration] baseUrl],relativeUrl];
+    if(configuration.isDebug){
+        NSLog(@"%@ -- %@",[self.delegate requestUrl],requestUrl);
+    }
     NSURLSessionTask *sessionTask = [requestProxy requestWithType:YPHttpRequestTypePost url:requestUrl parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self semaphoreLockProtectBlock:^{
             [self.dispatchedSessionTask removeObjectForKey:relativeUrl];

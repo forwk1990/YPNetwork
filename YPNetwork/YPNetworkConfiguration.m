@@ -33,12 +33,49 @@ static YPNetworkConfiguration* _instance = nil;
 - (instancetype)init{
     if(self = [super init]){
         self.timeoutInterval = 5;
+#ifdef DEBUG
+        self.Debug = YES;
+#else
+        self.Debug = NO;
+#endif
     }
     return self;
 }
 
 - (void)resolePathsFromFile:(NSString *)fileName{
-    
+    if([fileName hasSuffix:@"plist"]){
+        [self _resovlePathsFromPlistFile:fileName];
+    }
+}
+
+- (void)resolePathsFromFile:(NSString *)fileName ofType:(NSString *)fileType{
+    if([fileType isEqualToString:@""] || fileType == nil){
+        [self resolePathsFromFile:fileName];
+        return;
+    }
+    if([fileType isEqualToString:@"plist"]){
+        [self _resovlePathsFromPlistFile:[fileName stringByAppendingPathExtension:fileType]];
+    }
+}
+
+- (NSMutableDictionary<NSString *,NSString *> *)paths{
+    if(_paths == nil){
+        _paths = [NSMutableDictionary dictionary];
+    }
+    return _paths;
+}
+
+- (void)_resovlePathsFromPlistFile:(NSString *)fileName{
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:fileName ofType:nil];
+    NSDictionary *paths = [NSDictionary dictionaryWithContentsOfFile:filePath];
+    __weak typeof(self) weakSelf = self;
+    [paths enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+        if([key isKindOfClass:NSClassFromString(@"NSString")]
+           && [obj isKindOfClass:NSClassFromString(@"NSString")]){
+            __strong YPNetworkConfiguration *strongSelf = weakSelf;
+            [strongSelf.paths setValue:obj forKey:key];
+        }
+    }];
 }
 
 @end

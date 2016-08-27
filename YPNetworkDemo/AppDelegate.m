@@ -23,6 +23,7 @@
     YPNetworkConfiguration *configuration = [YPNetworkConfiguration configuration];
     configuration.baseUrl = @"http://api.lujuee.com";
     configuration.requestSerializerType = YPHttpSerializerTypeJson;
+    [configuration resolePathsFromFile:@"requestPaths" ofType:@"plist"];
     
     
     ViewController *rootViewController = [[ViewController alloc] init];
