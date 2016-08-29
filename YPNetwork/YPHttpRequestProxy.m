@@ -72,6 +72,7 @@ static YPHttpRequestProxy* _instance = nil;
                                        success:(void (^)(NSURLSessionDataTask * _Nonnull, id _Nullable))success
                                        failure:(void (^)(NSURLSessionDataTask * _Nullable, NSError * _Nonnull))failure{
     NSAssert(type == YPHttpRequestTypeGet || type == YPHttpRequestTypePost, @"unknown request type");
+    @weakify(self)
     
     NSURLSessionTask *sessionTask = nil;
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
@@ -101,10 +102,12 @@ static YPHttpRequestProxy* _instance = nil;
     }];
     
     SuccessBlock successBlock = ^(NSURLSessionDataTask *task, id _Nullable responseObject){
+        @strongify(self)
         success(task,responseObject);
         [self removeDispatchedTaskByIdentifier:sessionTask.taskIdentifier];
     };
     FailureBlock failureBlock = ^(NSURLSessionDataTask *task, NSError *error){
+        @strongify(self)
         failure(task,error);
         [self removeDispatchedTaskByIdentifier:sessionTask.taskIdentifier];
     };
@@ -128,7 +131,7 @@ static YPHttpRequestProxy* _instance = nil;
 
 - (void)removeDispatchedTaskByIdentifier:(NSUInteger)identifier{
     [self semaphoreLockProtectBlock:^{
-         [self.dispatchedTable removeObjectForKey:[NSString stringWithFormat:@"%lu",identifier]];
+        [self.dispatchedTable removeObjectForKey:[NSString stringWithFormat:@"%lu",identifier]];
     }];
 }
 

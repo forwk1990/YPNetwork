@@ -42,6 +42,13 @@ static YPNetworkConfiguration* _instance = nil;
     return self;
 }
 
+- (NSMutableDictionary<NSString *,NSString *> *)paths{
+    if(_paths == nil){
+        _paths = [NSMutableDictionary dictionary];
+    }
+    return _paths;
+}
+
 - (void)resolePathsFromFile:(NSString *)fileName{
     if([fileName hasSuffix:@"plist"]){
         [self _resovlePathsFromPlistFile:fileName];
@@ -58,13 +65,6 @@ static YPNetworkConfiguration* _instance = nil;
     }
 }
 
-- (NSMutableDictionary<NSString *,NSString *> *)paths{
-    if(_paths == nil){
-        _paths = [NSMutableDictionary dictionary];
-    }
-    return _paths;
-}
-
 - (void)_resovlePathsFromPlistFile:(NSString *)fileName{
     NSString *filePath = [[NSBundle mainBundle] pathForResource:fileName ofType:nil];
     NSDictionary *paths = [NSDictionary dictionaryWithContentsOfFile:filePath];
@@ -77,5 +77,6 @@ static YPNetworkConfiguration* _instance = nil;
         }
     }];
 }
+
 
 @end

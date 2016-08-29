@@ -10,4 +10,7 @@
 
 @interface NSString (YPNetwork)
 
+- (BOOL)isEmpty;
+- (BOOL)isEmptyString;
+
 @end
