@@ -22,7 +22,7 @@
 @property (nonatomic,strong) NSMutableDictionary<NSString *, NSString *> *paths;
 @property (nonatomic,assign,getter=isDebug) Boolean Debug;
 
-- (void)resolePathsFromFile:(NSString *)fileName;
-- (void)resolePathsFromFile:(NSString *)fileName ofType:(NSString *)fileType;
+- (void)resolvePathsFromFile:(NSString *)fileName;
+- (void)resolvePathsFromFile:(NSString *)fileName ofType:(NSString *)fileType;
 
 @end
