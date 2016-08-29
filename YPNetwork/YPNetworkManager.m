@@ -72,7 +72,7 @@ static YPNetworkManager* _instance = nil;
     NSString *fileFullName = [[NSBundle mainBundle] pathForResource:localFileName ofType:nil];
     NSError *error;
     NSString *contentOfFile = [NSString stringWithContentsOfFile:fileFullName encoding:NSUTF8StringEncoding error:&error];
-    if(error != nil){
+    if(error == nil){
         return contentOfFile;
     }
     else{
@@ -81,16 +81,37 @@ static YPNetworkManager* _instance = nil;
 }
 
 - (void)sendRequest{
+    @weakify(self)
     
-    // before send intercptor
+    // 发送之前调用请求前aop
     if([self.interceptor respondsToSelector:@selector(beforeRequest)]){
         [self.interceptor performSelector:@selector(beforeRequest)];
     }
     
-    NSString *relativeUrl = [self.delegate requestUrl];
+    NSString *relativeToken = [self.delegate requestUrl];
+    NSString *relativeUrl = @"";
+    
+    // 根据urlToken获取真实相对路径
+    YPNetworkConfiguration *configuration = [YPNetworkConfiguration configuration];
+    if([[[configuration paths] allKeys] containsObject:relativeToken]){
+        relativeUrl = configuration.paths[relativeToken];
+    }
+    
+    // 获取绝对路径,该路径可直接用于请求
+    NSString *requestUrl = [NSString stringWithFormat:@"%@%@",[[YPNetworkConfiguration configuration] baseUrl],relativeUrl];
+    if(configuration.isDebug){
+        NSLog(@"%@ -- %@",relativeToken,requestUrl);
+        
+        NSString *localJsonFileContent = [self performRequestFromLocalFile:[relativeToken stringByAppendingPathExtension:@"json"]];
+        if(![localJsonFileContent isEmpty]&&![localJsonFileContent isEmptyString]){
+            [self.delegate performSelector:@selector(networkManager:successResponseObject:) withObject:self withObject:localJsonFileContent];
+            return;
+        }
+    }
+    
     YPHttpRequestProxy *requestProxy = [YPHttpRequestProxy proxy];
     [self semaphoreLockProtectBlock:^{
-        // prev request not complete , cancel it
+        // 如果之前的请求还未结束，取消它
         if([self.dispatchedSessionTask.allKeys containsObject:relativeUrl]){
             [requestProxy cancelbyIdentifier:self.dispatchedSessionTask[relativeUrl]];
             [self.dispatchedSessionTask removeObjectForKey:relativeUrl];
@@ -104,15 +125,8 @@ static YPNetworkManager* _instance = nil;
     setRequestProxyValueByKey(requestHeaders)
     
     NSDictionary *parameters = [self.delegate parameters];
-    
-    // get the ture url from configuration paths
-    YPNetworkConfiguration *configuration = [YPNetworkConfiguration configuration];
-    if([[[configuration paths] allKeys] containsObject:relativeUrl]){
-        relativeUrl = configuration.paths[relativeUrl];
-    }
-    
-    NSString *requestUrl = [NSString stringWithFormat:@"%@%@",[[YPNetworkConfiguration configuration] baseUrl],relativeUrl];
     NSURLSessionTask *sessionTask = [requestProxy requestWithType:YPHttpRequestTypePost url:requestUrl parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        @strongify(self)
         [self semaphoreLockProtectBlock:^{
             [self.dispatchedSessionTask removeObjectForKey:relativeUrl];
         }];
@@ -124,6 +138,7 @@ static YPNetworkManager* _instance = nil;
             [self.interceptor performSelector:@selector(afterManipulateSuccessResponseObject:) withObject:responseObject];
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        @strongify(self)
         [self semaphoreLockProtectBlock:^{
             [self.dispatchedSessionTask removeObjectForKey:relativeUrl];
         }];
@@ -139,6 +154,7 @@ static YPNetworkManager* _instance = nil;
     [self semaphoreLockProtectBlock:^{
         self.dispatchedSessionTask[relativeUrl] = [NSString stringWithFormat:@"%lu",sessionTask.taskIdentifier];
     }];
+    
 }
 
 

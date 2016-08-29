@@ -38,7 +38,8 @@
 }
 
 - (NSString *)requestUrl{
-    return @"/mobile/user/sms_password/send";
+    return @"api_getShortMessageCode";
+    //return @"/mobile/user/sms_password/send";
 }
 
 - (NSDictionary<NSString *,id> *)parameters{

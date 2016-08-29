@@ -20,7 +20,9 @@
 @property (nonatomic,copy) NSDictionary<NSString*,NSString*> *requestHeaders;
 @property (nonatomic,assign) NSTimeInterval timeoutInterval;
 @property (nonatomic,strong) NSMutableDictionary<NSString *, NSString *> *paths;
+@property (nonatomic,assign,getter=isDebug) Boolean Debug;
 
 - (void)resolePathsFromFile:(NSString *)fileName;
+- (void)resolePathsFromFile:(NSString *)fileName ofType:(NSString *)fileType;
 
 @end
