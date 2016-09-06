@@ -18,7 +18,7 @@
 
 - (YPNetworkManager *)manager{
     if(_manager == nil){
-        _manager = [YPNetworkManager manager];
+        _manager = [YPNetworkManager defaultManager];
         _manager.delegate = self;
     }
     return _manager;

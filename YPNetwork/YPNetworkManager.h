@@ -29,21 +29,9 @@
 
 @end
 
-@protocol YPNetworkManagerInterceptor <NSObject>
-
-@optional
-- (void)beforeRequest;
-- (void)beforeManipulateSucessResponseObject:(id)responseObject;
-- (void)afterManipulateSuccessResponseObject:(id)responseObject;
-- (void)beforeManipulateError:(NSError *)error;
-- (void)afterManipulateError:(NSError *)error;
-- (void)completeRequestWithResponseObject:(id)responseObject maybeError:(NSError *)error;
-@end
-
-
 @interface YPNetworkManager : NSObject
 
-+ (instancetype)manager;
++ (instancetype)defaultManager;
 
 @property (nonatomic,weak) id<YPNetworkManagerDelegate> delegate;
 @property (nonatomic,weak) id<YPNetworkManagerInterceptor> interceptor;

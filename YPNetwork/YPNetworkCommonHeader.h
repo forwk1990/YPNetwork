@@ -10,6 +10,7 @@
 #define YPNetworkCommonHeader_h
 
 #import "NSString+YPNetwork.h"
+#import "YPNetworkManagerInterceptor.h"
 
 typedef enum : NSUInteger {
     YPHttpRequestTypeGet,

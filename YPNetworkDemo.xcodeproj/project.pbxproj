@@ -41,6 +41,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0B3FF5EA1D7EFF0C00F4F2E4 /* YPNetworkManagerInterceptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YPNetworkManagerInterceptor.h; sourceTree = "<group>"; };
 		0B4E5CA61D6D2DBD00F15F14 /* YPNetworkDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YPNetworkDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0B4E5CAA1D6D2DBD00F15F14 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		0B4E5CAC1D6D2DBD00F15F14 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -177,6 +178,7 @@
 				0B4E5CE21D6D2DEA00F15F14 /* YPNetworkConfiguration.m */,
 				0B4E5CE31D6D2DEA00F15F14 /* YPNetworkManager.h */,
 				0B4E5CE41D6D2DEA00F15F14 /* YPNetworkManager.m */,
+				0B3FF5EA1D7EFF0C00F4F2E4 /* YPNetworkManagerInterceptor.h */,
 			);
 			path = YPNetwork;
 			sourceTree = "<group>";

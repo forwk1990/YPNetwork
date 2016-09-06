@@ -8,7 +8,9 @@
 
 #import "YPNetworkConfiguration.h"
 
-@implementation YPNetworkConfiguration
+@implementation YPNetworkConfiguration{
+    NSMutableArray<id<YPNetworkManagerInterceptor>> *_interceptors;
+}
 
 static YPNetworkConfiguration* _instance = nil;
 
@@ -32,14 +34,24 @@ static YPNetworkConfiguration* _instance = nil;
 
 - (instancetype)init{
     if(self = [super init]){
+        
         self.timeoutInterval = 5;
+        
 #ifdef DEBUG
         self.Debug = YES;
 #else
         self.Debug = NO;
 #endif
+        
+        if(_interceptors == nil){
+            _interceptors = [NSMutableArray array];
+        }
     }
     return self;
+}
+
+- (NSArray<id<YPNetworkManagerInterceptor>> *)interceptors{
+    return _interceptors;
 }
 
 - (NSMutableDictionary<NSString *,NSString *> *)paths{
@@ -47,6 +59,11 @@ static YPNetworkConfiguration* _instance = nil;
         _paths = [NSMutableDictionary dictionary];
     }
     return _paths;
+}
+
+- (void)registerInterceptorWithClass:(Class)cls{
+    if(![cls conformsToProtocol:@protocol(YPNetworkManagerInterceptor)]) return;
+    [_interceptors addObject:[[cls alloc] init]];
 }
 
 - (void)resolvePathsFromFile:(NSString *)fileName{
