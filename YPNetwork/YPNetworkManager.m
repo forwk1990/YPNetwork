@@ -28,7 +28,7 @@ if([self.delegate respondsToSelector:@selector(key)]){\
 
 static YPNetworkManager* _instance = nil;
 
-+ (instancetype)manager{
++ (instancetype)defaultManager{
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _instance = [[YPNetworkManager alloc] init];
@@ -50,7 +50,6 @@ static YPNetworkManager* _instance = nil;
     }
     return self;
 }
-
 
 - (NSMutableDictionary<NSString *,NSString *> *)dispatchedSessionTask{
     if(_dispatchedSessionTask == nil){
@@ -95,16 +94,25 @@ static YPNetworkManager* _instance = nil;
     YPNetworkConfiguration *configuration = [YPNetworkConfiguration configuration];
     if([[[configuration paths] allKeys] containsObject:relativeToken]){
         relativeUrl = configuration.paths[relativeToken];
+    }else{
+        relativeUrl = relativeToken;
     }
     
     // 获取绝对路径,该路径可直接用于请求
     NSString *requestUrl = [NSString stringWithFormat:@"%@%@",[[YPNetworkConfiguration configuration] baseUrl],relativeUrl];
     if(configuration.isDebug){
-        NSLog(@"%@ -- %@",relativeToken,requestUrl);
-        
+        NSLog(@"Network manager Debug : %@ -- %@",relativeToken,requestUrl);
         NSString *localJsonFileContent = [self performRequestFromLocalFile:[relativeToken stringByAppendingPathExtension:@"json"]];
-        if(![localJsonFileContent isEmpty]&&![localJsonFileContent isEmptyString]){
-            [self.delegate performSelector:@selector(networkManager:successResponseObject:) withObject:self withObject:localJsonFileContent];
+        if(![localJsonFileContent isEmpty] && ![localJsonFileContent isEmptyString]){
+            NSLog(@"Network manager Debug : Find local json file");
+            NSData *jsonData = [localJsonFileContent dataUsingEncoding:NSUTF8StringEncoding];
+            NSError *serializationError;
+            id jsonObject = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&serializationError];
+            if(serializationError == nil){
+                [self.delegate performSelector:@selector(networkManager:successResponseObject:) withObject:self withObject:jsonObject];
+            }else{
+                [self.delegate performSelector:@selector(networkManager:failureResponseError:) withObject:serializationError];
+            }
             return;
         }
     }

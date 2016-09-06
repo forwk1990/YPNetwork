@@ -49,15 +49,15 @@ static YPNetworkConfiguration* _instance = nil;
     return _paths;
 }
 
-- (void)resolePathsFromFile:(NSString *)fileName{
+- (void)resolvePathsFromFile:(NSString *)fileName{
     if([fileName hasSuffix:@"plist"]){
         [self _resovlePathsFromPlistFile:fileName];
     }
 }
 
-- (void)resolePathsFromFile:(NSString *)fileName ofType:(NSString *)fileType{
+- (void)resolvePathsFromFile:(NSString *)fileName ofType:(NSString *)fileType{
     if([fileType isEqualToString:@""] || fileType == nil){
-        [self resolePathsFromFile:fileName];
+        [self resolvePathsFromFile:fileName];
         return;
     }
     if([fileType isEqualToString:@"plist"]){

@@ -43,7 +43,7 @@
 
 @interface YPNetworkManager : NSObject
 
-+ (instancetype)manager;
++ (instancetype)defaultManager;
 
 @property (nonatomic,weak) id<YPNetworkManagerDelegate> delegate;
 @property (nonatomic,weak) id<YPNetworkManagerInterceptor> interceptor;
