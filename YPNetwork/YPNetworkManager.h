@@ -32,12 +32,12 @@
 @protocol YPNetworkManagerInterceptor <NSObject>
 
 @optional
-- (void)beforeRequest;
-- (void)beforeManipulateSucessResponseObject:(id)responseObject;
-- (void)afterManipulateSuccessResponseObject:(id)responseObject;
-- (void)beforeManipulateError:(NSError *)error;
-- (void)afterManipulateError:(NSError *)error;
-- (void)completeRequestWithResponseObject:(id)responseObject maybeError:(NSError *)error;
+- (void)beginRequest;
+- (void)preSuccessHandlerExecuteResponse:(id)responseObject;
+- (void)postSuccessHandlerExecuteResponse:(id)responseObject;
+- (void)preFailureHandlerExecuteError:(NSError *)error;
+- (void)postFailureHandlerExecuteError:(NSError *)error;
+- (void)endRequestWithResponse:(id)response orError:(NSError *)error;
 @end
 
 

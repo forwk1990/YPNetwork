@@ -83,8 +83,8 @@ static YPNetworkManager* _instance = nil;
     @weakify(self)
     
     // 发送之前调用请求前aop
-    if([self.interceptor respondsToSelector:@selector(beforeRequest)]){
-        [self.interceptor performSelector:@selector(beforeRequest)];
+    if([self.interceptor respondsToSelector:@selector(beginRequest)]){
+        [self.interceptor performSelector:@selector(beginRequest)];
     }
     
     NSString *relativeToken = [self.delegate requestUrl];
@@ -138,24 +138,24 @@ static YPNetworkManager* _instance = nil;
         [self semaphoreLockProtectBlock:^{
             [self.dispatchedSessionTask removeObjectForKey:relativeUrl];
         }];
-        if([self.interceptor respondsToSelector:@selector(beforeManipulateSucessResponseObject:)]){
-            [self.interceptor performSelector:@selector(beforeManipulateSucessResponseObject:) withObject:responseObject];
+        if([self.interceptor respondsToSelector:@selector(preSuccessHandlerExecuteResponse:)]){
+            [self.interceptor performSelector:@selector(preSuccessHandlerExecuteResponse:) withObject:responseObject];
         }
         [self.delegate performSelector:@selector(networkManager:successResponseObject:) withObject:self withObject:responseObject];
-        if([self.interceptor respondsToSelector:@selector(afterManipulateSuccessResponseObject:)]){
-            [self.interceptor performSelector:@selector(afterManipulateSuccessResponseObject:) withObject:responseObject];
+        if([self.interceptor respondsToSelector:@selector(postSuccessHandlerExecuteResponse:)]){
+            [self.interceptor performSelector:@selector(postSuccessHandlerExecuteResponse:) withObject:responseObject];
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         @strongify(self)
         [self semaphoreLockProtectBlock:^{
             [self.dispatchedSessionTask removeObjectForKey:relativeUrl];
         }];
-        if([self.interceptor respondsToSelector:@selector(beforeManipulateError:)]){
-            [self.interceptor performSelector:@selector(beforeManipulateError:) withObject:error];
+        if([self.interceptor respondsToSelector:@selector(preFailureHandlerExecuteError:)]){
+            [self.interceptor performSelector:@selector(preFailureHandlerExecuteError:) withObject:error];
         }
         [self.delegate performSelector:@selector(networkManager:failureResponseError:) withObject:self withObject:error];
-        if([self.interceptor respondsToSelector:@selector(afterManipulateError:)]){
-            [self.interceptor performSelector:@selector(afterManipulateError:) withObject:error];
+        if([self.interceptor respondsToSelector:@selector(postFailureHandlerExecuteError:)]){
+            [self.interceptor performSelector:@selector(postFailureHandlerExecuteError:) withObject:error];
         }
     }];
     
