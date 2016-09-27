@@ -106,6 +106,7 @@ static YPHttpRequestProxy* _instance = nil;
         success(task,responseObject);
         [self removeDispatchedTaskByIdentifier:sessionTask.taskIdentifier];
     };
+    
     FailureBlock failureBlock = ^(NSURLSessionDataTask *task, NSError *error){
         @strongify(self)
         failure(task,error);
@@ -125,7 +126,7 @@ static YPHttpRequestProxy* _instance = nil;
         self.dispatchedTable[[NSString stringWithFormat:@"%lu",sessionTask.taskIdentifier]] = sessionTask;
     }];
     
-    NSAssert(sessionTask != nil, @"request failure");
+    NSAssert(sessionTask != nil, @"[YPHttpRequestProxy]: request failure");
     return sessionTask;
 }
 

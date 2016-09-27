@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "YPNetworkCommonHeader.h"
+#import "YPNetworkInterceptor.h"
 
 @interface YPNetworkConfiguration : NSObject
 
@@ -21,7 +22,7 @@
 @property (nonatomic,assign) NSTimeInterval timeoutInterval;
 @property (nonatomic,strong) NSMutableDictionary<NSString *, NSString *> *paths;
 @property (nonatomic,assign,getter=isDebug) Boolean Debug;
-@property (nonatomic,copy,readonly) NSArray<id<YPNetworkManagerInterceptor>> *interceptors;
+@property (nonatomic,copy,readonly) NSArray<id<YPNetworkInterceptor>> *interceptors;
 
 - (void)resolvePathsFromFile:(NSString *)fileName;
 - (void)resolvePathsFromFile:(NSString *)fileName ofType:(NSString *)fileType;

@@ -9,7 +9,7 @@
 #import "YPNetworkConfiguration.h"
 
 @implementation YPNetworkConfiguration{
-    NSMutableArray<id<YPNetworkManagerInterceptor>> *_interceptors;
+    NSMutableArray<id<YPNetworkInterceptor>> *_interceptors;
 }
 
 static YPNetworkConfiguration* _instance = nil;
@@ -50,7 +50,7 @@ static YPNetworkConfiguration* _instance = nil;
     return self;
 }
 
-- (NSArray<id<YPNetworkManagerInterceptor>> *)interceptors{
+- (NSArray<id<YPNetworkInterceptor>> *)interceptors{
     return _interceptors;
 }
 
@@ -62,7 +62,7 @@ static YPNetworkConfiguration* _instance = nil;
 }
 
 - (void)registerInterceptorWithClass:(Class)cls{
-    if(![cls conformsToProtocol:@protocol(YPNetworkManagerInterceptor)]) return;
+    if(![cls conformsToProtocol:@protocol(YPNetworkInterceptor)]) return;
     [_interceptors addObject:[[cls alloc] init]];
 }
 

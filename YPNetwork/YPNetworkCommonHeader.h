@@ -10,7 +10,6 @@
 #define YPNetworkCommonHeader_h
 
 #import "NSString+YPNetwork.h"
-#import "YPNetworkManagerInterceptor.h"
 
 typedef enum : NSUInteger {
     YPHttpRequestTypeGet,
@@ -21,6 +20,15 @@ typedef enum :  NSUInteger {
     YPHttpSerializerTypeDefault,
     YPHttpSerializerTypeJson
 } YPHttpSerializerType;
+
+//void YPLog(NSString *format, ...) {
+//#ifdef DEBUG
+//    va_list argptr;
+//    va_start(argptr, format);
+//    NSLogv(format, argptr);
+//    va_end(argptr);
+//#endif
+//}
 
 #ifndef weakify
 #if DEBUG

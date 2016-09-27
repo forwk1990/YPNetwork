@@ -7,6 +7,7 @@
 //
 
 #import "YPNetworkManager.h"
+#import "YPMethodInvoker.h"
 
 #define setRequestProxyValueByKey(key) \
 if([self.delegate respondsToSelector:@selector(key)]){\
@@ -15,15 +16,24 @@ if([self.delegate respondsToSelector:@selector(key)]){\
     requestProxy.key = [[YPNetworkConfiguration configuration] key];\
 }\
 
+#define kNetworkBeginRequest NSStringFromSelector(@selector(networkManagerBeginRequest:))
+#define kNetworkPreSuccess NSStringFromSelector(@selector(networkManager:willHandleResponse:))
+#define kNetworkPostSuccess NSStringFromSelector(@selector(networkManager:didHandleResponse:))
+#define kNetworkPreFailure NSStringFromSelector(@selector(networkManager:willHandleError:))
+#define kNetworkPostFailure NSStringFromSelector(@selector(networkManager:didHandleError:))
+#define kNetworkEndRequest NSStringFromSelector(@selector(networkManagerEndRequest:))
+
 
 @interface YPNetworkManager ()
 
 @property (nonatomic,strong) NSMutableDictionary<NSString *, NSString *> *dispatchedSessionTask;
+@property (nonatomic,strong) NSMutableDictionary<NSString *, YPMethodInvoker *> *interceptorSteps;
 
 @end
 
 @implementation YPNetworkManager{
     dispatch_semaphore_t _semaphoreLock;
+    BOOL _interceptorsInitialized;
 }
 
 static YPNetworkManager* _instance = nil;
@@ -47,6 +57,7 @@ static YPNetworkManager* _instance = nil;
 - (instancetype)init{
     if(self = [super init]){
         _semaphoreLock = dispatch_semaphore_create(1);
+        _interceptorsInitialized = NO;
     }
     return self;
 }
@@ -56,6 +67,13 @@ static YPNetworkManager* _instance = nil;
         _dispatchedSessionTask = [NSMutableDictionary dictionary];
     }
     return _dispatchedSessionTask;
+}
+
+-  (NSMutableDictionary<NSString *,YPMethodInvoker *> *)interceptorSteps{
+    if(_interceptorSteps == nil){
+        _interceptorSteps = [NSMutableDictionary dictionary];
+    }
+    return _interceptorSteps;
 }
 
 - (void)semaphoreLockProtectBlock:(void (^)())block{
@@ -79,13 +97,64 @@ static YPNetworkManager* _instance = nil;
     }
 }
 
+- (void)buildInterceptorStepWithSelector:(SEL)selector{
+    NSString *selectorString = NSStringFromSelector(selector);
+    self.interceptorSteps[selectorString] = [YPMethodInvoker invokerWithSelector:selector];
+}
+
+- (void)buildInterceptorSteps{
+    @weakify(self)
+    
+    /// initialize interceptor steps
+    [self buildInterceptorStepWithSelector:@selector(networkManagerBeginRequest:)];
+    [self buildInterceptorStepWithSelector:@selector(networkManager:willHandleResponse:)];
+    [self buildInterceptorStepWithSelector:@selector(networkManager:didHandleResponse:)];
+    [self buildInterceptorStepWithSelector:@selector(networkManager:willHandleError:)];
+    [self buildInterceptorStepWithSelector:@selector(networkManager:didHandleError:)];
+    [self buildInterceptorStepWithSelector:@selector(networkManagerEndRequest:)];
+    
+    /// 搭建调用对象链
+    YPNetworkConfiguration *configuration = [YPNetworkConfiguration configuration];
+    [configuration.interceptors enumerateObjectsUsingBlock:^(id<YPNetworkInterceptor>  _Nonnull target, NSUInteger idx, BOOL * _Nonnull stop) {
+        @strongify(self)
+        [self registerInterceptorTagert:target];
+    }];
+    
+    // 链接自身inteceptor
+    [self registerInterceptorTagert:self];
+}
+
+- (void)registerInterceptorTagert:(id)target{
+    if([target respondsToSelector:@selector(networkManagerBeginRequest:)]){
+        [self.interceptorSteps[kNetworkBeginRequest] registerTarget:target];
+    }
+    if([target respondsToSelector:@selector(networkManager:willHandleResponse:)]){
+        [self.interceptorSteps[kNetworkPreSuccess] registerTarget:target];
+    }
+    if([target respondsToSelector:@selector(networkManager:didHandleResponse:)]){
+        [self.interceptorSteps[kNetworkPostSuccess] registerTarget:target];
+    }
+    if([target respondsToSelector:@selector(networkManager:willHandleError:)]){
+        [self.interceptorSteps[kNetworkPreFailure] registerTarget:target];
+    }
+    if([target respondsToSelector:@selector(networkManager:didHandleError:)]){
+        [self.interceptorSteps[kNetworkPostFailure] registerTarget:target];
+    }
+    if([target respondsToSelector:@selector(networkManagerEndRequest:)]){
+        [self.interceptorSteps[kNetworkEndRequest] registerTarget:target];
+    }
+}
+
 - (void)sendRequest{
     @weakify(self)
     
-    // 发送之前调用请求前aop
-    if([self.interceptor respondsToSelector:@selector(beginRequest)]){
-        [self.interceptor performSelector:@selector(beginRequest)];
+    if(!_interceptorsInitialized){
+        [self buildInterceptorSteps];
+        _interceptorsInitialized = YES;
     }
+    
+    // 发送之前调用请求前aop
+    [self.interceptorSteps[kNetworkBeginRequest] invokeWithObject:self];
     
     NSString *relativeToken = [self.delegate requestUrl];
     NSString *relativeUrl = @"";
@@ -101,17 +170,17 @@ static YPNetworkManager* _instance = nil;
     // 获取绝对路径,该路径可直接用于请求
     NSString *requestUrl = [NSString stringWithFormat:@"%@%@",[[YPNetworkConfiguration configuration] baseUrl],relativeUrl];
     if(configuration.isDebug){
-        NSLog(@"Network manager Debug : %@ -- %@",relativeToken,requestUrl);
+        //YPLog(@"Network manager Debug : %@ -- %@",relativeToken,requestUrl);
         NSString *localJsonFileContent = [self performRequestFromLocalFile:[relativeToken stringByAppendingPathExtension:@"json"]];
         if(![localJsonFileContent isEmpty] && ![localJsonFileContent isEmptyString]){
-            NSLog(@"Network manager Debug : Find local json file");
+            //YPLog(@"Network manager Debug : Find local json file");
             NSData *jsonData = [localJsonFileContent dataUsingEncoding:NSUTF8StringEncoding];
             NSError *serializationError;
             id jsonObject = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&serializationError];
             if(serializationError == nil){
-                [self.delegate performSelector:@selector(networkManager:successResponseObject:) withObject:self withObject:jsonObject];
+                [self.interceptorSteps[kNetworkPostSuccess] invokeWithObject:self withObject:jsonObject];
             }else{
-                [self.delegate performSelector:@selector(networkManager:failureResponseError:) withObject:serializationError];
+                [self.interceptorSteps[kNetworkPostFailure] invokeWithObject:serializationError];
             }
             return;
         }
@@ -135,34 +204,36 @@ static YPNetworkManager* _instance = nil;
     NSDictionary *parameters = [self.delegate parameters];
     NSURLSessionTask *sessionTask = [requestProxy requestWithType:YPHttpRequestTypePost url:requestUrl parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         @strongify(self)
+        [self.interceptorSteps[kNetworkEndRequest] invokeWithObject:self];
         [self semaphoreLockProtectBlock:^{
             [self.dispatchedSessionTask removeObjectForKey:relativeUrl];
         }];
-        if([self.interceptor respondsToSelector:@selector(preSuccessHandlerExecuteResponse:)]){
-            [self.interceptor performSelector:@selector(preSuccessHandlerExecuteResponse:) withObject:responseObject];
-        }
+        [self.interceptorSteps[kNetworkPreSuccess] invokeWithObject:self withObject:responseObject];
         [self.delegate performSelector:@selector(networkManager:successResponseObject:) withObject:self withObject:responseObject];
-        if([self.interceptor respondsToSelector:@selector(postSuccessHandlerExecuteResponse:)]){
-            [self.interceptor performSelector:@selector(postSuccessHandlerExecuteResponse:) withObject:responseObject];
-        }
+        [self.interceptorSteps[kNetworkPostSuccess] invokeWithObject:self withObject:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         @strongify(self)
+        [self.interceptorSteps[kNetworkEndRequest] invokeWithObject:self];
         [self semaphoreLockProtectBlock:^{
             [self.dispatchedSessionTask removeObjectForKey:relativeUrl];
         }];
-        if([self.interceptor respondsToSelector:@selector(preFailureHandlerExecuteError:)]){
-            [self.interceptor performSelector:@selector(preFailureHandlerExecuteError:) withObject:error];
-        }
+        [self.interceptorSteps[kNetworkPreFailure] invokeWithObject:error];
         [self.delegate performSelector:@selector(networkManager:failureResponseError:) withObject:self withObject:error];
-        if([self.interceptor respondsToSelector:@selector(postFailureHandlerExecuteError:)]){
-            [self.interceptor performSelector:@selector(postFailureHandlerExecuteError:) withObject:error];
-        }
+        [self.interceptorSteps[kNetworkPostFailure] invokeWithObject:error];
     }];
     
     [self semaphoreLockProtectBlock:^{
         self.dispatchedSessionTask[relativeUrl] = [NSString stringWithFormat:@"%lu",sessionTask.taskIdentifier];
     }];
     
+}
+
+- (NSString *)requestUrl{
+    return [self.delegate requestUrl];
+}
+
+- (NSDictionary<NSString *,id> *)requestParameters{
+    return [self.delegate parameters];
 }
 
 

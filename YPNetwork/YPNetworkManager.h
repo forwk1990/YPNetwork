@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "YPHttpRequestProxy.h"
 #import "YPNetworkConfiguration.h"
+#import "YPNetworkInterceptor.h"
 
 @class YPNetworkManager;
 
@@ -29,15 +30,21 @@
 
 @end
 
-
 @interface YPNetworkManager : NSObject
 
 + (instancetype)defaultManager;
 
+@property (nonatomic,strong) id responseObject;
+@property (nonatomic,strong) id responseString;
 @property (nonatomic,weak) id<YPNetworkManagerDelegate> delegate;
-@property (nonatomic,weak) id<YPNetworkManagerInterceptor> interceptor;
+@property (nonatomic,weak) id<YPNetworkInterceptor> interceptor;
 
 - (void)sendRequest;
 - (NSString *)performRequestFromLocalFile:(NSString *)localFileName;
+
+/// 获取当前请求的URL地址
+- (NSString *)requestUrl;
+/// 获取当前请求的URL参数
+- (NSDictionary<NSString*,id>*)requestParameters;
 
 @end
