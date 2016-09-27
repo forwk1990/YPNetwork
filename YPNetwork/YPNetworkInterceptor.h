@@ -10,13 +10,14 @@
 #define YPNetworkInterceptor_h
 
 @class YPNetworkManager;
+@class YPNetworkResponse;
 
 @protocol YPNetworkInterceptor <NSObject>
 
 @optional
 - (void)networkManagerBeginRequest:(nonnull YPNetworkManager *)networkManager;
-- (void)networkManager:(nonnull YPNetworkManager *)networkManager willHandleResponse:(id _Nonnull *)responseObject;
-- (void)networkManager:(nonnull YPNetworkManager *)networkManager didHandleResponse:(nullable NSObject *)responseObject;
+- (void)networkManager:(nonnull YPNetworkManager *)networkManager willHandleResponse:(nullable YPNetworkResponse*)responseObject;
+- (void)networkManager:(nonnull YPNetworkManager *)networkManager didHandleResponse:(nullable YPNetworkResponse*)responseObject;
 - (void)networkManager:(nonnull YPNetworkManager *)networkManager willHandleError:(nullable NSError *)error;
 - (void)networkManager:(nonnull YPNetworkManager *)networkManager didHandleError:(nullable NSError *)error;
 - (void)networkManagerEndRequest:(nonnull YPNetworkManager *)networkManager;

@@ -64,21 +64,11 @@
             case 2:
                 [target performSelector:strongifySelf.selector];
                 break;
-            case 3:{
+            case 3:
                 [target performSelector:strongifySelf.selector withObject:arguments[0]];
-            }
                 break;
-            case 4:{
-                NSLog(@"argument0:%s -- argument1:%s - encode:%s",[methodSignature getArgumentTypeAtIndex:2],[methodSignature getArgumentTypeAtIndex:3],@encode(NSObject * _Nonnull __strong *));
-                NSInvocation *methodInvocation = [NSInvocation invocationWithMethodSignature:methodSignature];
-                [methodInvocation setSelector:strongifySelf.selector];
-                [methodInvocation setTarget:target];
-                NSObject *argument0 = arguments[0];
-                NSObject *argument1 = arguments[1];
-                [methodInvocation setArgument:&argument0 atIndex:2];
-                [methodInvocation setArgument:(__bridge void * _Nonnull)(argument1) atIndex:3];
-                [methodInvocation invoke];
-            }
+            case 4:
+                [target performSelector:strongifySelf.selector withObject:arguments[0] withObject:arguments[1]];
                 break;
             default:
                 break;

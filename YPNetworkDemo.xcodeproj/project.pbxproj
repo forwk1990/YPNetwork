@@ -20,6 +20,9 @@
 		0B8FDB091D71CD5600F3DA48 /* requestPaths.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0B8FDB081D71CD5600F3DA48 /* requestPaths.plist */; };
 		0B8FDB0B1D71DDD000F3DA48 /* api_getShortMessageCode.json in Resources */ = {isa = PBXBuildFile; fileRef = 0B8FDB0A1D71DDD000F3DA48 /* api_getShortMessageCode.json */; };
 		0B8FDB0F1D71DFA800F3DA48 /* NSString+YPNetwork.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B8FDB0E1D71DFA800F3DA48 /* NSString+YPNetwork.m */; };
+		0BC81F121D9A643F009CD91C /* YPMethodInvoker.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BC81F111D9A643F009CD91C /* YPMethodInvoker.m */; };
+		0BC81F151D9A6497009CD91C /* YPNetworkResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BC81F141D9A6497009CD91C /* YPNetworkResponse.m */; };
+		0BC81F191D9A6CA5009CD91C /* YPInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BC81F181D9A6CA5009CD91C /* YPInterceptor.m */; };
 		2A4E6DEDEBE7F5438FEC2A64 /* libPods-YPNetworkDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5607A8C2BAF149A2630E9C76 /* libPods-YPNetworkDemo.a */; };
 /* End PBXBuildFile section */
 
@@ -41,7 +44,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0B3FF5EA1D7EFF0C00F4F2E4 /* YPNetworkManagerInterceptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YPNetworkManagerInterceptor.h; sourceTree = "<group>"; };
 		0B4E5CA61D6D2DBD00F15F14 /* YPNetworkDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YPNetworkDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0B4E5CAA1D6D2DBD00F15F14 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		0B4E5CAC1D6D2DBD00F15F14 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -69,6 +71,13 @@
 		0B8FDB0A1D71DDD000F3DA48 /* api_getShortMessageCode.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = api_getShortMessageCode.json; sourceTree = "<group>"; };
 		0B8FDB0D1D71DFA800F3DA48 /* NSString+YPNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+YPNetwork.h"; sourceTree = "<group>"; };
 		0B8FDB0E1D71DFA800F3DA48 /* NSString+YPNetwork.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+YPNetwork.m"; sourceTree = "<group>"; };
+		0BC81F101D9A643F009CD91C /* YPMethodInvoker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YPMethodInvoker.h; sourceTree = "<group>"; };
+		0BC81F111D9A643F009CD91C /* YPMethodInvoker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YPMethodInvoker.m; sourceTree = "<group>"; };
+		0BC81F131D9A6497009CD91C /* YPNetworkResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YPNetworkResponse.h; sourceTree = "<group>"; };
+		0BC81F141D9A6497009CD91C /* YPNetworkResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YPNetworkResponse.m; sourceTree = "<group>"; };
+		0BC81F161D9A65E7009CD91C /* YPNetworkInterceptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YPNetworkInterceptor.h; sourceTree = "<group>"; };
+		0BC81F171D9A6CA5009CD91C /* YPInterceptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YPInterceptor.h; sourceTree = "<group>"; };
+		0BC81F181D9A6CA5009CD91C /* YPInterceptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YPInterceptor.m; sourceTree = "<group>"; };
 		0D5AB913CBE67856AC94C7C3 /* Pods-YPNetworkDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YPNetworkDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-YPNetworkDemo/Pods-YPNetworkDemo.release.xcconfig"; sourceTree = "<group>"; };
 		1650B6F96DF79749ED7C678F /* Pods-YPNetworkDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YPNetworkDemo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-YPNetworkDemo/Pods-YPNetworkDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		5607A8C2BAF149A2630E9C76 /* libPods-YPNetworkDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-YPNetworkDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -136,6 +145,8 @@
 				0B4E5CBA1D6D2DBD00F15F14 /* Info.plist */,
 				0B4E5CA91D6D2DBD00F15F14 /* Supporting Files */,
 				0B8FDB081D71CD5600F3DA48 /* requestPaths.plist */,
+				0BC81F171D9A6CA5009CD91C /* YPInterceptor.h */,
+				0BC81F181D9A6CA5009CD91C /* YPInterceptor.m */,
 			);
 			path = YPNetworkDemo;
 			sourceTree = "<group>";
@@ -170,6 +181,9 @@
 			isa = PBXGroup;
 			children = (
 				0B8FDB0C1D71DF0700F3DA48 /* Category */,
+				0BC81F161D9A65E7009CD91C /* YPNetworkInterceptor.h */,
+				0BC81F101D9A643F009CD91C /* YPMethodInvoker.h */,
+				0BC81F111D9A643F009CD91C /* YPMethodInvoker.m */,
 				0B4E5CDD1D6D2DEA00F15F14 /* YPHttpRequestProxy.h */,
 				0B4E5CDE1D6D2DEA00F15F14 /* YPHttpRequestProxy.m */,
 				0B4E5CDF1D6D2DEA00F15F14 /* YPNetwork.h */,
@@ -178,7 +192,8 @@
 				0B4E5CE21D6D2DEA00F15F14 /* YPNetworkConfiguration.m */,
 				0B4E5CE31D6D2DEA00F15F14 /* YPNetworkManager.h */,
 				0B4E5CE41D6D2DEA00F15F14 /* YPNetworkManager.m */,
-				0B3FF5EA1D7EFF0C00F4F2E4 /* YPNetworkManagerInterceptor.h */,
+				0BC81F131D9A6497009CD91C /* YPNetworkResponse.h */,
+				0BC81F141D9A6497009CD91C /* YPNetworkResponse.m */,
 			);
 			path = YPNetwork;
 			sourceTree = "<group>";
@@ -394,7 +409,10 @@
 				0B4E5CB11D6D2DBD00F15F14 /* ViewController.m in Sources */,
 				0B4E5CAE1D6D2DBD00F15F14 /* AppDelegate.m in Sources */,
 				0B4E5CAB1D6D2DBD00F15F14 /* main.m in Sources */,
+				0BC81F151D9A6497009CD91C /* YPNetworkResponse.m in Sources */,
+				0BC81F191D9A6CA5009CD91C /* YPInterceptor.m in Sources */,
 				0B4E5CE71D6D2DEA00F15F14 /* YPNetworkManager.m in Sources */,
+				0BC81F121D9A643F009CD91C /* YPMethodInvoker.m in Sources */,
 				0B8FDB0F1D71DFA800F3DA48 /* NSString+YPNetwork.m in Sources */,
 				0B4E5CE61D6D2DEA00F15F14 /* YPNetworkConfiguration.m in Sources */,
 				0B4E5CE51D6D2DEA00F15F14 /* YPHttpRequestProxy.m in Sources */,

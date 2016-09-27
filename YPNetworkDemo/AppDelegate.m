@@ -25,6 +25,9 @@
     configuration.requestSerializerType = YPHttpSerializerTypeJson;
     configuration.Debug = NO;
     [configuration resolvePathsFromFile:@"requestPaths" ofType:@"plist"];
+    [configuration registerInterceptorWithClass:NSClassFromString(@"YPInterceptor")];
+    
+    
     
     
     ViewController *rootViewController = [[ViewController alloc] init];

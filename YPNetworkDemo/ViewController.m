@@ -47,7 +47,7 @@
 }
 
 - (void)networkManager:(YPNetworkManager *)manager successResponseObject:(id)responseObject{
-    NSLog([responseObject description]);
+    
 }
 
 - (void)networkManager:(YPNetworkManager *)manager failureResponseError:(NSError *)error{

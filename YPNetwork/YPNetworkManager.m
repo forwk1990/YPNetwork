@@ -8,6 +8,7 @@
 
 #import "YPNetworkManager.h"
 #import "YPMethodInvoker.h"
+#import "YPNetworkResponse.h"
 
 #define setRequestProxyValueByKey(key) \
 if([self.delegate respondsToSelector:@selector(key)]){\
@@ -178,7 +179,7 @@ static YPNetworkManager* _instance = nil;
             NSError *serializationError;
             id jsonObject = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&serializationError];
             if(serializationError == nil){
-                [self.interceptorSteps[kNetworkPostSuccess] invokeWithObject:self withObject:jsonObject];
+                [self.interceptorSteps[kNetworkPostSuccess] invokeWithObject:self withObject:[[YPNetworkResponse alloc] initWithResponseObject:jsonObject]];
             }else{
                 [self.interceptorSteps[kNetworkPostFailure] invokeWithObject:serializationError];
             }
@@ -208,9 +209,10 @@ static YPNetworkManager* _instance = nil;
         [self semaphoreLockProtectBlock:^{
             [self.dispatchedSessionTask removeObjectForKey:relativeUrl];
         }];
-        [self.interceptorSteps[kNetworkPreSuccess] invokeWithObject:self withObject:responseObject];
-        [self.delegate performSelector:@selector(networkManager:successResponseObject:) withObject:self withObject:responseObject];
-        [self.interceptorSteps[kNetworkPostSuccess] invokeWithObject:self withObject:responseObject];
+        YPNetworkResponse *networkResponse = [[YPNetworkResponse alloc] initWithResponseObject:responseObject];
+        [self.interceptorSteps[kNetworkPreSuccess] invokeWithObject:self withObject:networkResponse];
+        [self.delegate performSelector:@selector(networkManager:successResponseObject:) withObject:self withObject:networkResponse];
+        [self.interceptorSteps[kNetworkPostSuccess] invokeWithObject:self withObject:networkResponse];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         @strongify(self)
         [self.interceptorSteps[kNetworkEndRequest] invokeWithObject:self];
